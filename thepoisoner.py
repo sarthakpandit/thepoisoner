@@ -10,12 +10,13 @@ from scapy.all import *
 ### CONFIG ###
 ##############
 # Edit these values... Eventually these will autoconfigure... 
-airmonpath = "/usr/local/sbin/airmon-ng"  # Path to airmon-ng
+airmonpath = "/usr/local/sbin/airmon-ng"
+#airmonpath = "os.popen("which airmon-ng")" # if someone can make this work? It would be epic :)
+
 
 ################
 # STOP EDITING #
 ################
-#SIOCGIFNETMASK = 0x891b
 
 # Function: amiroot()
 def amiroot():
@@ -81,9 +82,13 @@ def makerange(gwaddr):
 
 # ARP scanner function goes here that gets list of possible targets...
 def arpscan(scanrange):
-    ans,unans=srp(Ether()/ARP(pdst=scanrange),timeout=1)
+    ans,unans=srp(Ether()/ARP(pdst=scanrange),timeout=1,inter=0.1)
     for snd,rcv in ans:
         print rcv.sprintf("%Ether.src% & %ARP.psrc%")
+
+# Faster ARP scanner, currently disabled as it is "crashy".
+#def arpscan(scanrange):
+#    arping("scanrange")
 
 # Function: Arppoison
 def arppoison(iface, target, gwaddr):
