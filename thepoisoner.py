@@ -5,7 +5,7 @@ import struct
 import time
 import subprocess
 from scapy.all import *
-#conf.verb=0
+conf.verb=0
 ##############
 ### CONFIG ###
 ##############
@@ -82,7 +82,7 @@ def makerange(gwaddr):
 
 # ARP scanner function goes here that gets list of possible targets...
 def arpscan(scanrange):
-    ans,unans=srp(Ether()/ARP(pdst=scanrange),timeout=1,inter=0.1)
+    ans,unans=srp(Ether()/ARP(pdst=scanrange),timeout=0.5,inter=0.1)
     for snd,rcv in ans:
         print rcv.sprintf("%Ether.src% & %ARP.psrc%")
 
