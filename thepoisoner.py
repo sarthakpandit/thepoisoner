@@ -149,7 +149,7 @@ def launch_driftnet(iface):
     elif choose == "y":
         try:
             print("[+] Launching Driftnet in background!")
-            os.popen("xterm -e driftnet -i " + iface + " &")
+            os.popen("xterm -e driftnet -c -m -i " + iface + " &")
         except Exception:
             print("Something Broke!")
             sys.exit(1)
