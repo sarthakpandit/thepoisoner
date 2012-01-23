@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import os
 import sys
 import socket
@@ -12,7 +13,6 @@ from scapy.all import *
 # Edit these values... Eventually these will autoconfigure... 
 airmonpath = "/usr/local/sbin/airmon-ng"
 #airmonpath = "os.popen("which airmon-ng")" # if someone can make this work? It would be epic :)
-
 
 ################
 # STOP EDITING #
