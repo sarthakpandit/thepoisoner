@@ -5,7 +5,7 @@ import struct
 import time
 import subprocess
 from scapy.all import *
-conf.verb=0
+#conf.verb=0
 ##############
 ### CONFIG ###
 ##############
@@ -185,7 +185,7 @@ gwaddr = get_default_gateway_linux()
 print("[*] Gateway address: " + gwaddr)
 scanrange = makerange(gwaddr)
 print("[+] Range to scan is: " + scanrange)
-arping("scanrange") # should be a far faster scanner. If it breaks just uncomment the one above :)
+print(arping(scanrange)) # should be a far faster scanner. If it breaks just uncomment the one above :)
 #arpscan(scanrange)
 target = raw_input("Please Select a Target: ")
 arppoison(iface, target, gwaddr)
