@@ -26,6 +26,18 @@ def amiroot():
     else:
         pass
 
+def banner():
+    print(" _____ _         ______      _                           ")
+    print("|_   _| |        | ___ \    (_)                          ")
+    print("  | | | |__   ___| |_/ /___  _ ___  ___  _ __   ___ _ __ ")
+    print("  | | | '_ \ / _ \  __// _ \| / __|/ _ \| '_ \ / _ \ '__|")
+    print("  | | | | | |  __/ |  | (_) | \__ \ (_) | | | |  __/ |   ")
+    print("  \_/ |_| |_|\___\_|   \___/|_|___/\___/|_| |_|\___|_| ")
+    print("")
+    print("      ARP Poisoning and MITM Utility by infodox.")
+    print("            http://blog.infodox.co.cc ")
+    print(" Report bugs to me, I am in the IRC chan #intern0t on Freenode")
+
 # Function: check_airmon()
 def check_airmon(airmonpath):
     if os.path.isfile(airmonpath) == True:
@@ -173,7 +185,7 @@ def launch_sslstrip():
             sys.exit(1)
 
 # THIS PART DOES SHIT!
-print("Starting up!!!")
+banner()
 amiroot()
 check_airmon(airmonpath)
 print("[*] These are the interfaces available to you")
