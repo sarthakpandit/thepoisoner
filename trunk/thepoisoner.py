@@ -10,7 +10,6 @@ from scapy.all import * # this may need to be changed depending on your system..
 # End of Imports Section
 # Edit these values... Eventually these will autoconfigure... I advise leaving them be cos they just fucking work.
 airmonpath = "/usr/local/sbin/airmon-ng"
-#airmonpath = "os.popen("which airmon-ng")" # if someone can make this work? It would be epic :)
 #conf.verb=0 # I had to comment this out to get the ARP scanner to work. I apologise for any annoying messages it gives :/
 # It is not advised to edit beyond this point
 
@@ -91,16 +90,6 @@ def makerange(gwaddr):
     SIP=gwaddr.split('.') # Splits the IP address of the gateway
     iprange = SIP[0] + '.' + SIP[1] + '.' + SIP[2] + '.0/24' # makes a new one that is the range
     return iprange
-
-# ARP scanner function goes here that gets list of possible targets...
-#def arpscan(scanrange):
-#    ans,unans=srp(Ether()/ARP(pdst=scanrange),timeout=0.5,inter=0.1)
-#    for snd,rcv in ans:
-#        print rcv.sprintf("%Ether.src% & %ARP.psrc%")
-
-# Faster ARP scanner, currently disabled as it is "crashy".
-#def arpscan(scanrange):
-#    arping("scanrange")
 
 # Function: Arppoison
 def arppoison(iface, target, gwaddr): # This function will soon be depracated once I get SCAPY to do it for me.
